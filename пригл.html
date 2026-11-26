@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Приглашение на свидание ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #ffe6e6;
+            --card-bg: #fffafb;
+            --pink: #ff9a9e;
+            --dark-pink: #e06b75;
+            --text-color: #5a3d3d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: repeating-linear-gradient(45deg, #ffe6e6, #ffe6e6 20px, #ffd1d1 20px, #ffd1d1 40px);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 154, 158, 0.4);
+            font-size: 24px;
+            animation: floatUp 8s linear infinite;
+            bottom: -50px;
+            z-index: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: transparent;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 0;
+            z-index: 1;
+        }
+
+        @media (min-width: 450px) {
+            .app-container {
+                height: 90vh;
+                border-radius: 30px;
+                border: 8px solid #f7b2b7;
+            }
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-color);
+            transition: opacity 0.5s ease;
+            z-index: 2;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- ЭКРАН 1: КОНВЕРТ (С АНИМАЦИЕЙ) --- */
+        .envelope-wrapper {
+            cursor: pointer;
+            position: relative;
+            width: 250px;
+            height: 180px;
+            perspective: 1000px;
+        }
+        
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(224, 107, 117, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 125px solid transparent;
+            border-right: 125px solid transparent;
+            border-top: 90px solid #ffe6e6;
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 3;
+        }
+
+        .envelope-paper {
+            position: absolute;
+            top: 10px; left: 20px;
+            width: 210px;
+            height: 160px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 2;
+            transform: translateY(20px);
+            transition: transform 0.6s ease-in-out 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .envelope-heart {
+            font-size: 40px;
+            z-index: 4;
+            position: relative;
+        }
+
+        .tap-text {
+            margin-top: 30px;
+            font-weight: 600;
+            color: var(--dark-pink);
+            text-align: center;
+            font-size: 18px;
+            transition: opacity 0.3s;
+        }
+
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-wrapper.open .envelope-paper {
+            transform: translateY(-60px);
+        }
+
+        .envelope-wrapper.open .envelope-heart {
+            animation: pop 0.5s ease-out forwards;
+        }
+
+        .envelope-wrapper.open .tap-text {
+            opacity: 0;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* --- ЭКРАН 2: СТЕРЕТЬ + КЛАВИАТУРА --- */
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            height: 540px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(224, 107, 117, 0.2);
+            background: #fffafb; 
+        }
+        
+        .scratch-content {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .scratch-content h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            color: var(--text-color);
+        }
+        
+        .code-display {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .code-box {
+            width: 45px;
+            height: 50px;
+            border-bottom: 3px solid var(--pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--dark-pink);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 260px;
+        }
+        .key {
+            background: #fff;
+            border: 2px solid #f0e0e0;
+            border-radius: 15px;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            box-shadow: 0 3px 0 #f0e0e0;
+            transition: 0.1s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .key:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+        .key.delete {
+            color: var(--dark-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+        .btn-check {
+            margin-top: 20px;
+            padding: 12px 40px;
+            background: var(--dark-pink);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(224, 107, 117, 0.3);
+            opacity: 0.5;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .btn-check.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- СЛОЙ СТИРАНИЯ (SVG) --- */
+        .scratch-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10;
+            cursor: crosshair;
+            touch-action: none;
+            overflow: hidden;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .scratch-svg {
+            display: block;
+            width: 100%; height: 100%;
+        }
+
+        .scratch-text {
+            fill: #ffffff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            text-anchor: middle;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .fly-away {
+            opacity: 0;
+            transform: translateY(-50px) scale(1.1);
+        }
+
+        /* --- ОСТАЛЬНЫЕ ЭКРАНЫ (3-7) --- */
+        .timer-image {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .timer-text { font-size: 20px; font-weight: 600; margin-bottom: 10px; text-align: center; }
+        .timer-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--dark-pink);
+            margin-bottom: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--pink), var(--dark-pink));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(224, 107, 117, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+
+        /* --- БЛОК "ТАЙМЕР СБРОШЕН" --- */
+        #timeout-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 10px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .timeout-msg {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--dark-pink);
+            margin-bottom: 8px;
+        }
+        .timeout-sub {
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 18px;
+            line-height: 1.4;
+            max-width: 260px;
+        }
+
+        /* --- ШКАЛА ПРОГРЕССА --- */
+        .progress-container {
+            position: absolute; top: 20px; left: 10%; width: 80%; height: 15px;
+            background: rgba(255, 255, 255, 0.5); border-radius: 10px;
+            display: none; z-index: 100; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress-fill {
+            height: 100%; width: 5%; background: var(--pink); border-radius: 10px;
+            position: relative; transition: width 1s ease-in-out;
+            display: flex; align-items: center; justify-content: flex-end;
+        }
+        .progress-heart {
+            position: absolute; right: -8px; top: -6px; font-size: 20px;
+            animation: sway 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes sway {
+            0% { transform: rotate(-15deg) scale(1); }
+            100% { transform: rotate(15deg) scale(1.1); }
+        }
+
+        .white-card {
+            background: #fff; border-radius: 30px; padding: 30px 20px; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; box-shadow: 0 10px 25px rgba(224, 107, 117, 0.15);
+            position: relative;
+        }
+
+        .vinyl-container {
+            width: 150px; height: 150px; background: #222; border-radius: 50%;
+            margin-bottom: 20px; display: flex; justify-content: center;
+            align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            cursor: pointer; position: relative;
+        }
+        .vinyl-container.playing { animation: spin 3s linear infinite; }
+        .vinyl-center {
+            width: 50px; height: 50px; background: var(--pink); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 24px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .question-text { font-size: 22px; font-weight: 800; margin-bottom: 30px; }
+        
+        .answers {
+            display: flex; flex-direction: column; width: 100%;
+            gap: 15px; position: relative; height: 120px;
+        }
+        .btn-yes, .btn-no {
+            padding: 15px; border: none; border-radius: 25px; font-size: 18px;
+            font-weight: 700; font-family: 'Nunito', sans-serif; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; width: 100%;
+        }
+        .btn-yes { background: var(--dark-pink); color: white; z-index: 2; }
+        .btn-no {
+            background: #ffe6e6; color: var(--dark-pink); position: absolute;
+            bottom: 0; z-index: 1;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        /* --- КАРТИНКИ ВМЕСТО ЭМОДЗИ --- */
+        .cat-image {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .title-text { font-size: 24px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
+        .subtitle-text { font-size: 16px; color: #888; margin-bottom: 30px; }
+
+        .input-group { width: 100%; text-align: left; margin-bottom: 15px; }
+        .input-group label {
+            font-size: 14px; font-weight: 600; color: var(--dark-pink);
+            margin-left: 10px; margin-bottom: 5px; display: block;
+        }
+        .input-group input {
+            width: 100%; padding: 15px; border: 2px solid var(--pink);
+            border-radius: 15px; font-family: 'Nunito', sans-serif; font-size: 16px;
+            outline: none; color: var(--text-color);
+        }
+
+        .final-text { font-size: 18px; line-height: 1.5; margin-bottom: 20px; }
+        .screenshot-btn {
+            margin-top: 20px; background: transparent; color: var(--dark-pink);
+            border: 2px dashed var(--dark-pink); padding: 12px 25px;
+            border-radius: 20px; font-weight: 700; font-family: 'Nunito', sans-serif;
+            font-size: 16px; cursor: pointer;
+        }
+
+        .heart-particle {
+            position: absolute; font-size: 24px; pointer-events: none; z-index: 999;
+            animation: explode 1s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-hearts"></div>
+
+    <!-- Аудио: положи music.mp3 рядом с этим HTML -->
+    <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
+
+    <div class="app-container">
+        
+        <!-- Экран 1 -->
+        <div id="screen1" class="screen active">
+            <div class="envelope-wrapper" id="envelope-wrapper" onclick="openEnvelope()">
+                <div class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-paper"></div>
+                    <div class="envelope-heart">❤️</div>
+                </div>
+            </div>
+            <div class="tap-text">Нажми на конверт</div>
+        </div>
+
+        <!-- Экран 2 -->
+        <div id="screen2" class="screen">
+            <div class="scratch-container" id="scratch-box">
+                <div class="scratch-content">
+                    <h2>В каком месяце какого года мы увидимся с тобой?</h2>
+                    
+                    <div class="code-display">
+                        <div class="code-box" id="box0"></div>
+                        <div class="code-box" id="box1"></div>
+                        <div class="code-box" id="box2"></div>
+                        <div class="code-box" id="box3"></div>
+                    </div>
+
+                    <div class="keypad">
+                        <button class="key" onclick="pressKey('1')">1</button>
+                        <button class="key" onclick="pressKey('2')">2</button>
+                        <button class="key" onclick="pressKey('3')">3</button>
+                        <button class="key" onclick="pressKey('4')">4</button>
+                        <button class="key" onclick="pressKey('5')">5</button>
+                        <button class="key" onclick="pressKey('6')">6</button>
+                        <button class="key" onclick="pressKey('7')">7</button>
+                        <button class="key" onclick="pressKey('8')">8</button>
+                        <button class="key" onclick="pressKey('9')">9</button>
+                        <div class="key" style="background: transparent; border: none; box-shadow: none;"></div>
+                        <button class="key" onclick="pressKey('0')">0</button>
+                        <button class="key delete" onclick="deleteKey()">⌫</button>
+                    </div>
+
+                    <button id="code-submit" class="btn-check" onclick="checkCode()">Проверить</button>
+                </div>
+
+                <div class="scratch-overlay" id="scratch-overlay">
+                    <svg class="scratch-svg" id="scratch-svg">
+                        <rect id="scratch-rect" width="100%" height="100%" fill="#e06b75" />
+                        <text x="50%" y="50%" class="scratch-text" id="scratch-text">Сотри меня ✨</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран 3 -->
+        <div id="screen3" class="screen">
+            <!-- Медведь: положи bear.png рядом с HTML -->
+            <img class="timer-image" src="bear.png" alt="Медведь">
+            <div class="timer-text" id="timer-msg">Скоро ты увидишь кое-что особенное...</div>
+            <div class="timer-display" id="timer-display">30:00</div>
+            
+            <button id="time-up-btn" class="btn" style="display: none;" onclick="nextScreen(4)">Время пришло ❤️</button>
+            
+            <div id="timeout-box">
+                <div class="timeout-msg">Не дождался меня? 🥺</div>
+                <div class="timeout-sub">Таймер сбросился, потому что ты свернул вкладку. Нажми «Начать заново», и я снова начну отсчёт 💕</div>
+                <button class="btn" onclick="restartTimer()">Начать заново</button>
+            </div>
+        </div>
+
+        <!-- Экран 4 -->
+        <div id="screen4" class="screen">
+            <div class="progress-container" id="progress-bar">
+                <div class="progress-fill" id="progress-fill">
+                    <div class="progress-heart">💖</div>
+                </div>
+            </div>
+            
+            <div class="white-card">
+                <div class="vinyl-container" id="vinyl" onclick="toggleMusic()">
+                    <div class="vinyl-center">▶</div>
+                </div>
+                <div class="question-text">Ты пойдешь со мной на свидание?</div>
+                <div class="answers">
+                    <button class="btn-yes" id="btn-yes" onclick="sayYes()">Да</button>
+                    <button class="btn-no" id="btn-no" onclick="shrinkNo(event)">Нет</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран 5 -->
+        <div id="screen5" class="screen">
+            <div class="progress-container" id="progress-bar2">
+                <div class="progress-fill" id="progress-fill2">
+                    <div class="progress-heart">💖</div>
+                </div>
+            </div>
+            <div class="white-card">
+                <!-- Котик: положи cat.png рядом с HTML -->
+                <img class="cat-image" src="cat.png" alt="Котик">
+                <div class="title-text">Подожди, ты действительно сказал да?</div>
+                <div class="subtitle-text">Я была готова, что скажешь "нет" ахах</div>
+                <button class="btn" onclick="nextScreen(6)">ДА ДА ДА</button>
+            </div>
+        </div>
+
+        <!-- Экран 6 -->
+        <div id="screen6" class="screen">
+            <div class="progress-container" id="progress-bar3">
+                <div class="progress-fill" id="progress-fill3">
+                    <div class="progress-heart">💖</div>
+                </div>
+            </div>
+            <div class="white-card">
+                <!-- Свинка: положи pig.png рядом с HTML -->
+                <img class="cat-image" src="pig.png" alt="Свинка">
+                <div class="title-text">И так... Когда ты свободен?</div>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label>Дата</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div class="input-group">
+                    <label>Время</label>
+                    <input type="time" id="time-input">
+                </div>
+                <button class="btn" style="margin-top: 10px;" onclick="setDate()">Выбери дату 💖</button>
+            </div>
+        </div>
+
+        <!-- Экран 7 -->
+        <div id="screen7" class="screen">
+            <div class="progress-container" id="progress-bar4" style="display: block;">
+                <div class="progress-fill" style="width: 100%;">
+                    <div class="progress-heart">💖</div>
+                </div>
+            </div>
+            <div class="white-card">
+                <!-- Пицца: положи pizza.png рядом с HTML -->
+                <img class="cat-image" src="pizza.png" alt="Пицца">
+                <div class="title-text">Рада, что ты не отказался.</div>
+                <div class="final-text" id="final-message">
+                    Будь готов... 
+                </div>
+                <button class="screenshot-btn">Сделай скрин и отправь мне 📸</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 0. Фоновые сердечки ---
+        const bgHearts = document.getElementById('bg-hearts');
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerText = ['❤️', '💖', '💕', '💗'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            bgHearts.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }, 500);
+
+        // --- 1. Переключение экранов ---
+        function nextScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            
+            if (num === 4) {
+                document.getElementById('progress-bar').style.display = 'block';
+                document.getElementById('progress-fill').style.width = '10%';
+            }
+            if (num === 5) {
+                document.getElementById('progress-bar2').style.display = 'block';
+                document.getElementById('progress-fill2').style.width = '40%';
+            }
+            if (num === 6) {
+                document.getElementById('progress-bar3').style.display = 'block';
+                document.getElementById('progress-fill3').style.width = '70%';
+            }
+        }
+
+        // --- АНИМАЦИЯ КОНВЕРТА ---
+        function openEnvelope() {
+            const wrapper = document.getElementById('envelope-wrapper');
+            wrapper.classList.add('open');
+            
+            setTimeout(() => {
+                nextScreen(2);
+            }, 1500);
+        }
+
+        // --- 2. Стирание через SVG ---
+        const overlay = document.getElementById('scratch-overlay');
+        const svg = document.getElementById('scratch-svg');
+        const scratchText = document.getElementById('scratch-text');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let circlesCount = 0;
+
+        function scratchAt(x, y) {
+            const distance = Math.hypot(x - lastX, y - lastY);
+            if (distance < 10) return;
+            
+            lastX = x;
+            lastY = y;
+
+            const rect = overlay.getBoundingClientRect();
+            const percentX = (x / rect.width) * 100;
+            const percentY = (y / rect.height) * 100;
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", percentX + "%");
+            circle.setAttribute("cy", percentY + "%");
+            circle.setAttribute("r", "8%");
+            circle.setAttribute("fill", "#fffafb");
+            
+            svg.insertBefore(circle, scratchText);
+            circlesCount++;
+
+            if (circlesCount > 10) {
+                scratchText.style.opacity = '0';
+            }
+
+            if (circlesCount % 10 === 0) {
+                checkScratchProgress();
+            }
+        }
+
+        overlay.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const rect = overlay.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+            scratchAt(lastX, lastY);
+        });
+        
+        overlay.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = overlay.getBoundingClientRect();
+            scratchAt(e.clientX - rect.left, e.clientY - rect.top);
+        });
+        
+        overlay.addEventListener('mouseup', () => isDrawing = false);
+        overlay.addEventListener('mouseleave', () => isDrawing = false);
+
+        overlay.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            const touch = e.touches[0];
+            const rect = overlay.getBoundingClientRect();
+            lastX = touch.clientX - rect.left;
+            lastY = touch.clientY - rect.top;
+            scratchAt(lastX, lastY);
+        }, {passive: true});
+        
+        overlay.addEventListener('touchmove', (e) => {
+            if (!isDrawing) return;
+            const touch = e.touches[0];
+            const rect = overlay.getBoundingClientRect();
+            scratchAt(touch.clientX - rect.left, touch.clientY - rect.top);
+        }, {passive: true});
+        
+        overlay.addEventListener('touchend', () => isDrawing = false);
+
+        function checkScratchProgress() {
+            if (circlesCount > 60) { 
+                overlay.classList.add('fly-away');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.getElementById('code-submit').classList.add('enabled');
+                }, 800);
+            }
+        }
+
+        // --- 3. Клавиатура и код ---
+        let currentCode = '';
+
+        function updateCodeDisplay() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById('box' + i).innerText = currentCode[i] || '';
+            }
+        }
+
+        function pressKey(num) {
+            if (currentCode.length < 4) {
+                currentCode += num;
+                updateCodeDisplay();
+            }
+        }
+
+        function deleteKey() {
+            currentCode = currentCode.slice(0, -1);
+            updateCodeDisplay();
+        }
+
+        function checkCode() {
+            if (currentCode === '0227') {
+                nextScreen(3);
+                startTimer();
+            } else {
+                const container = document.getElementById('scratch-box');
+                container.style.transform = 'translateX(-10px)';
+                setTimeout(() => container.style.transform = 'translateX(10px)', 50);
+                setTimeout(() => container.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => container.style.transform = 'translateX(10px)', 150);
+                setTimeout(() => container.style.transform = 'translateX(0)', 200);
+                
+                currentCode = '';
+                updateCodeDisplay();
+            }
+        }
+
+        // --- 4. Таймер ---
+        let timerInterval;
+        let timeLeft = 1 * 60; // 1 минута для проверки (потом поменяй на 30 * 60)
+        let isTimerRunning = false;
+        let hasTimeUp = false;
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 1 * 60; 
+            isTimerRunning = true;
+            hasTimeUp = false;
+            document.getElementById('timeout-box').style.display = 'none';
+            document.getElementById('timer-display').style.display = 'block';
+            document.getElementById('time-up-btn').style.display = 'none';
+            document.getElementById('timer-msg').innerText = 'Скоро ты увидишь кое-что особенное...';
+            document.getElementById('timer-msg').style.display = 'block';
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    hasTimeUp = true;
+                    document.getElementById('timer-display').style.display = 'none';
+                    document.getElementById('timer-msg').innerText = 'Оно случилось!';
+                    document.getElementById('time-up-btn').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function restartTimer() {
+            startTimer();
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('timer-display').style.display = 'none';
+                document.getElementById('timer-msg').style.display = 'none';
+                document.getElementById('time-up-btn').style.display = 'none';
+                document.getElementById('timeout-box').style.display = 'flex';
+            }
+        });
+
+        // --- 5. Музыка / Пластинка (music.mp3) ---
+        const musicEl = document.getElementById('bg-music');
+        const vinylEl = document.getElementById('vinyl');
+        const vinylIcon = vinylEl.querySelector('.vinyl-center');
+
+        function toggleMusic() {
+            if (musicEl.paused) {
+                musicEl.play().then(() => {
+                    vinylEl.classList.add('playing');
+                    vinylIcon.textContent = '❚❚';
+                }).catch(err => {
+                    console.warn('Не удалось воспроизвести music.mp3:', err);
+                    alert('Не получилось включить музыку. Проверь, что файл music.mp3 лежит рядом с HTML.');
+                });
+            } else {
+                musicEl.pause();
+                vinylEl.classList.remove('playing');
+                vinylIcon.textContent = '▶';
+            }
+        }
+
+        // --- 6. Кнопка "Нет": уменьшается, на 3-й клик исчезает ---
+        let noClicks = 0;
+
+        function shrinkNo(e) {
+            if (e) e.preventDefault();
+            const btnNo = document.getElementById('btn-no');
+            noClicks++;
+
+            if (noClicks === 1) {
+                btnNo.style.transform = 'scale(0.7)';
+            } else if (noClicks === 2) {
+                btnNo.style.transform = 'scale(0.45)';
+            } else if (noClicks >= 3) {
+                btnNo.style.transform = 'scale(0)';
+                btnNo.style.opacity = '0';
+                btnNo.style.pointerEvents = 'none';
+            }
+        }
+
+        // --- 7. Нажатие "Да" и взрыв ---
+        function sayYes() {
+            const yesBtn = document.getElementById('btn-yes');
+            const noBtn = document.getElementById('btn-no');
+            const rect = yesBtn.getBoundingClientRect();
+            
+            for (let i = 0; i < 30; i++) {
+                createHeartParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+            
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            
+            document.getElementById('progress-fill').style.width = '25%';
+            
+            setTimeout(() => {
+                nextScreen(5);
+            }, 1200);
+        }
+
+        function createHeartParticle(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-particle';
+            heart.innerText = ['❤️', '💖', '💕', '💗', '✨'][Math.floor(Math.random() * 5)];
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 200 + 50;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            heart.style.setProperty('--tx', `${tx}px`);
+            heart.style.setProperty('--ty', `${ty}px`);
+            
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        }
+
+        // --- 8. Выбор даты и финал ---
+        function setDate() {
+            const dateVal = document.getElementById('date-input').value;
+            const timeVal = document.getElementById('time-input').value;
+            
+            if (!dateVal || !timeVal) {
+                alert('Пожалуйста, выбери дату и время 😉');
+                return;
+            }
+
+            const dateObj = new Date(dateVal + 'T' + timeVal);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = dateObj.toLocaleDateString('ru-RU', options);
+            
+            document.getElementById('final-message').innerHTML = `Будь готов к <b>${formattedDate} в ${timeVal}</b> 😘`;
+            
+            nextScreen(7);
+        }
+    </script>
+</body>
+</html>
