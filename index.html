@@ -788,13 +788,13 @@
 
         // --- 4. Таймер ---
         let timerInterval;
-        let timeLeft = 1 * 60; // 1 минута для проверки (потом поменяй на 30 * 60)
+        let timeLeft = 10 * 60; // 1 минута для проверки (потом поменяй на 30 * 60)
         let isTimerRunning = false;
         let hasTimeUp = false;
 
         function startTimer() {
             clearInterval(timerInterval);
-            timeLeft = 1 * 60; 
+            timeLeft = 10 * 60; 
             isTimerRunning = true;
             hasTimeUp = false;
             document.getElementById('timeout-box').style.display = 'none';
